@@ -1,6 +1,7 @@
 <?php
 
 use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
+use TimothyVictor\JsonAPI\Test\Resources\Models\Article;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,10 +19,15 @@ $factory->define(Category::class, function (Faker\Generator $faker) {
     static $password;
 
     return [
-        'title' => $faker->name,
-        // 'email' => $faker->unique()->safeEmail,
-        // 'password' => $password ?: $password = bcrypt('secret'),
-        // 'remember_token' => str_random(10),
+        'title' => $faker->sentence(3),
+    ];
+});
+
+$factory->define(Article::class, function (Faker\Generator $faker) {
+    static $password;
+
+    return [
+        'title' => $faker->sentence(3),
     ];
 });
 

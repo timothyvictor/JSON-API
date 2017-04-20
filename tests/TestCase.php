@@ -60,11 +60,10 @@ class TestCase extends Orchestra
         });
     }
 
-    protected function assertValidJsonApiStructure($data, $definition = 'success')
+    protected function assertValidJsonApiStructure($data, $definition = 'schema')
     {
 
-        // $schema = file_get_contents(realpath(__DIR__.'/resources/schemas') . "/{$definition}.json");
-        $schema = file_get_contents(realpath(__DIR__.'/resources/schemas') . "/schema.json");
+        $schema = file_get_contents(realpath(__DIR__.'/resources/schemas') . "/{$definition}.json");
         $validator = new \JsonSchema\Validator;
         $validator->validate($data, json_decode($schema));
         $message = "";

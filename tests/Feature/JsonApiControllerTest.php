@@ -3,6 +3,7 @@
 namespace TimothyVictor\JsonAPI\Test;
 
 use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
+use TimothyVictor\JsonAPI\Test\Resources\Models\Article;
 
 class JsonApiControllerTest extends TestCase
 {
@@ -29,7 +30,12 @@ class JsonApiControllerTest extends TestCase
             ->assertStatus(200)
             ->assertHeader('Content-Type', 'application/vnd.api+json')
             ->assertJsonStructure([
-                'data',
+                'data' => [
+                    [
+                        'id',
+                        'type',
+                    ]
+                ],
                 'links',
                 'jsonapi'
             ])
@@ -69,6 +75,46 @@ class JsonApiControllerTest extends TestCase
                 'data' => [
                     'id' => $id,
                     'type' => 'categories'
+                ],
+            ]);
+    }
+
+    public function test_a_get_request_to_resource_with_a_relationship_contains_the_relationships_member()
+    {
+        // $this->disableExceptionHandling();
+
+        $categories = factory(Category::class, 5)->create();
+        $categories->each(function($category){
+            $category->articles()->saveMany(factory(Article::class, rand(1, 5))->make());
+        });
+        
+        $response = $this->json('GET', '/categories');
+
+        $this->assertValidJsonApiStructure(json_decode($response->getContent()));
+
+        $response
+            ->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/vnd.api+json')
+            ->assertJsonStructure([
+                'data' => [
+                    [
+                        'id',
+                        'type',
+                        'relationships' => [
+                            'articles' => [
+                                'data' => [
+                                    ['type', 'id']
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'links',
+                'jsonapi'
+            ])
+            ->assertJson([
+                'jsonapi' => [ 
+                    'version' =>  '1.0' 
                 ],
             ]);
     }

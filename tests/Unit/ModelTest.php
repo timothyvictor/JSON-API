@@ -9,7 +9,7 @@ class ModelTest extends TestCase
     public function test_transform_id_returns_the_models_key()
     {
         $category = factory(Category::class)->create();
-        $this->assertTrue($category->transformId() === $category->getKey());
+        $this->assertEquals($category->transformId(), $category->getKey());
     }
 
     public function test_transform_type_returns_the_plural_of_the_models_class_name()

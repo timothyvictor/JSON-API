@@ -25,7 +25,7 @@ class Serializer
 
     private function serializeResourceObject($item) : array
     {
-        return array_merge($this->serializeId($item), $this->serializeType($item), $this->serializeAttributes($item));
+        return array_merge($this->serializeId($item), $this->serializeType($item), $this->serializeAttributes($item), $this->serializeRelationships($item));
     }
 
     private function serializeType($item) : array
@@ -50,5 +50,35 @@ class Serializer
                 'self' => $item->transfromSelfLink()
             ]
         ];
+    }
+
+    private function serializeManyRelationship(Collection $relations) : array
+    {
+        $relations_array = $relations->map(function(Transformer $item, $key){
+            return (array_merge($this->serializeType($item), $this->serializeId($item)));
+        })->all();
+        return ['data' => $relations_array];
+    }
+
+    public function serializeRelationships(Transformer $item) : array
+    {
+        $relationshipMethods = collect($item->getRelationshipMethods());
+        // dump($relationshipMethods);
+        $relations = [];
+        if($relationshipMethods->isNotEmpty()) {
+            $relationshipMethods->each(function($method) use($item, &$relations){
+                $relation = $item->{$method}();
+                if ($relation instanceof Collection && $relation->isNotEmpty()) {
+                    $relations[$relation->first()->transformType()] = $this->serializeManyRelationship($relation);
+                } else if ($relation instanceof Transformer){
+                    $relations[$relation->transformType()] = $this->transformSingleRelationship($relation);
+                }
+            });
+        }
+        if (count($relations)){
+            return [
+                'relationships' => $relations
+            ];
+        } else return [];
     }
 }

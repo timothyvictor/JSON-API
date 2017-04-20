@@ -4,11 +4,13 @@ namespace TimothyVictor\JsonAPI;
 
 interface Transformer
 {
-    public function transformAttributes();
+    public function transformAttributes() : array;
 
     public function transformId();
 
-    public function transformType();
+    public function transformType() : string;
 
-    public function transfromSelfLink()
-;}
+    public function transfromSelfLink() : string;
+
+    public function getRelationshipMethods();
+}

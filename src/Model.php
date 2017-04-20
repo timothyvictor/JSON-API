@@ -6,18 +6,19 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 class Model extends EloquentModel implements Transformer
 {
+  protected $relations = [];
   
-  public function transformType()
+  public function transformType() : string
   {
     return str_plural(lcfirst(class_basename($this)));
   }
 
-  public function transformId()
+  public function transformId() : string
   {
     return $this->getKey();
   }
 
-  public function transformAttributes()
+  public function transformAttributes() : array
   {
     $attributes = collect($this->getAttributes());
     return $attributes->filter(function ($value, $key) {
@@ -25,8 +26,13 @@ class Model extends EloquentModel implements Transformer
       })->toArray();
   }
 
-  public function transfromSelfLink()
+  public function transfromSelfLink() : string
   { 
     return route("{$this->transformType()}.index");
+  }
+
+  public function getRelationshipMethods()
+  {
+    return $this->relations;
   }
 }
