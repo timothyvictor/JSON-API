@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 class Model extends EloquentModel implements Transformer
 {
-  protected $relations = [];
+  protected $relationMap = [];
   
   public function transformType() : string
   {
@@ -15,7 +15,7 @@ class Model extends EloquentModel implements Transformer
 
   public function transformId() : string
   {
-    return $this->getKey();
+    return $this->getRouteKey();
   }
 
   public function transformAttributes() : array
@@ -31,8 +31,8 @@ class Model extends EloquentModel implements Transformer
     return route("{$this->transformType()}.index");
   }
 
-  public function getRelationshipMethods()
+  public function getRelationMap()
   {
-    return $this->relations;
+    return $this->relationMap;
   }
 }

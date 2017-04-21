@@ -5,6 +5,7 @@ namespace TimothyVictor\JsonAPI\Test;
 use TimothyVictor\JsonAPI\Serializer;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Article;
+use TimothyVictor\JsonAPI\Test\Resources\Models\Author;
 
 class SerializerTest extends TestCase
 {
@@ -54,5 +55,47 @@ class SerializerTest extends TestCase
         // dump($relationships);
         $this->assertTrue(array_key_exists('articles', $relationships['relationships']));
     }
+
+    public function test_serialiaze_relationship_returns_an_empty_array_for_an_empty_has_many_relation()
+    {
+        $category = factory(Category::class)->create();
+        $serializer = $this->app->make(Serializer::class);
+        $relationships = $serializer->serializeRelationships($category);
+        $this->assertTrue(is_array($relationships));
+        $this->assertTrue(array_key_exists('relationships', $relationships));
+        $this->assertTrue(array_key_exists('articles', $relationships['relationships']));
+        $this->assertTrue(is_array($relationships['relationships']));
+        $this->assertTrue(empty($relationships['relationships']['articles']['data']));
+        // dump($relationships['relationships']['articles']);
+    }
+
+    public function test_serialiaze_relationship_returns_a_resource_identifier_object_for_a_present_to_one_relation()
+    {
+        $category = factory(Category::class)->create();
+        $author = $category->author()->associate(factory(Author::class)->create());
+        $author->save();
+        $serializer = $this->app->make(Serializer::class);
+        $relationships = $serializer->serializeRelationships($category);
+        $this->assertTrue(is_array($relationships));
+        $this->assertTrue(array_key_exists('relationships', $relationships));
+        $this->assertTrue(is_array($relationships['relationships']));
+        $this->assertTrue(array_key_exists('author', $relationships['relationships']));
+        $authorResourceIdentifier = $relationships['relationships']['author']['data'];
+        $this->assertTrue(is_array($authorResourceIdentifier));
+        $this->assertTrue(array_key_exists('type', $authorResourceIdentifier));
+        $this->assertTrue(array_key_exists('id', $authorResourceIdentifier));
+    }
     
+    public function test_serialiaze_relationship_returns_null_for_an_empty_to_one_relation()
+    {
+        $category = factory(Category::class)->create();
+        $serializer = $this->app->make(Serializer::class);
+        $relationships = $serializer->serializeRelationships($category);
+        $this->assertTrue(is_array($relationships));
+        $this->assertTrue(array_key_exists('relationships', $relationships));
+        $this->assertTrue(array_key_exists('articles', $relationships['relationships']));
+        $this->assertTrue(is_array($relationships['relationships']));
+        $this->assertTrue(gettype($relationships['relationships']['author']['data']) === "NULL");
+        
+    }
 }

@@ -4,6 +4,7 @@ namespace TimothyVictor\JsonAPI\Test;
 
 use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Article;
+use TimothyVictor\JsonAPI\Test\Resources\Models\Author;
 
 class JsonApiControllerTest extends TestCase
 {
@@ -82,14 +83,17 @@ class JsonApiControllerTest extends TestCase
     public function test_a_get_request_to_resource_with_a_relationship_contains_the_relationships_member()
     {
         // $this->disableExceptionHandling();
-
+        // factory(Author::class)->create();
         $categories = factory(Category::class, 5)->create();
         $categories->each(function($category){
+            $author = factory(Author::class)->create();
             $category->articles()->saveMany(factory(Article::class, rand(1, 5))->make());
+            $category->author()->associate($author)->save();
+
         });
         
         $response = $this->json('GET', '/categories');
-
+        // dd(json_decode($response->getContent()));
         $this->assertValidJsonApiStructure(json_decode($response->getContent()));
 
         $response

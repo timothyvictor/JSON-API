@@ -12,6 +12,8 @@ class CreateCategoriesTable extends Migration
     {
         Schema::create('categories', function ($table) {
             $table->increments('id');
+            $table->integer('author_id')->unsigned()->nullable();
+            $table->foreign('author_id')->references('id')->on('authors')->onDelete('cascade');
             $table->string('title');
             $table->timestamps();
         });

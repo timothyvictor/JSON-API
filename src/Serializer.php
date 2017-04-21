@@ -60,18 +60,24 @@ class Serializer
         return ['data' => $relations_array];
     }
 
+    private function serializeSingleRelationship($relation) : array
+    {
+        $data = ($relation instanceof Transformer) ? (array_merge($this->serializeType($relation), $this->serializeId($relation))) : NULL;
+        return ['data' => $data];
+    }
+
     public function serializeRelationships(Transformer $item) : array
     {
-        $relationshipMethods = collect($item->getRelationshipMethods());
+        $relationMap = collect($item->getRelationMap());
         // dump($relationshipMethods);
         $relations = [];
-        if($relationshipMethods->isNotEmpty()) {
-            $relationshipMethods->each(function($method) use($item, &$relations){
+        if($relationMap->isNotEmpty()) {
+            $relationMap->each(function($method, $type) use($item, &$relations){
                 $relation = $item->{$method}();
-                if ($relation instanceof Collection && $relation->isNotEmpty()) {
-                    $relations[$relation->first()->transformType()] = $this->serializeManyRelationship($relation);
-                } else if ($relation instanceof Transformer){
-                    $relations[$relation->transformType()] = $this->transformSingleRelationship($relation);
+                if ($relation instanceof Collection) {
+                    $relations[$type] = $this->serializeManyRelationship($relation);
+                } else {
+                    $relations[$type] = $this->serializeSingleRelationship($relation);
                 }
             });
         }

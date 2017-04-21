@@ -2,6 +2,7 @@
 
 use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Article;
+use TimothyVictor\JsonAPI\Test\Resources\Models\Author;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,13 @@ $factory->define(Article::class, function (Faker\Generator $faker) {
 
     return [
         'title' => $faker->sentence(3),
+    ];
+});
+
+$factory->define(Author::class, function (Faker\Generator $faker) {
+    return [
+        'first_name' => $faker->firstName,
+        'surname' => $faker->lastName
     ];
 });
 

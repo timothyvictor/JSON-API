@@ -12,5 +12,5 @@ interface Transformer
 
     public function transfromSelfLink() : string;
 
-    public function getRelationshipMethods();
+    public function getRelationMap();
 }
