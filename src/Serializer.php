@@ -62,29 +62,27 @@ class Serializer
 
     private function serializeSingleRelationship($relation) : array
     {
-        $data = ($relation instanceof Transformer) ? (array_merge($this->serializeType($relation), $this->serializeId($relation))) : NULL;
-        return ['data' => $data];
+        return ['data' => ($relation instanceof Transformer) ? (array_merge($this->serializeType($relation), $this->serializeId($relation))) : NULL];
+    }
+
+    private function serializeCorrectRelationshipType($relation)
+    {
+        return ($relation instanceof Collection) ? $this->serializeManyRelationship($relation) : $this->serializeSingleRelationship($relation);
+         
     }
 
     public function serializeRelationships(Transformer $item) : array
     {
         $relationMap = collect($item->getRelationMap());
-        // dump($relationshipMethods);
         $relations = [];
         if($relationMap->isNotEmpty()) {
             $relationMap->each(function($method, $type) use($item, &$relations){
                 $relation = $item->{$method}();
-                if ($relation instanceof Collection) {
-                    $relations[$type] = $this->serializeManyRelationship($relation);
-                } else {
-                    $relations[$type] = $this->serializeSingleRelationship($relation);
-                }
+                $selfLink = $item->transfromSelfLink() . '/' . $item->transformId() . '/' . $type;
+                $links = ['links' => ['self' => $selfLink]];
+                $relations[$type] = array_merge($this->serializeCorrectRelationshipType($relation, $item, $type), $links);
             });
         }
-        if (count($relations)){
-            return [
-                'relationships' => $relations
-            ];
-        } else return [];
+        return (count($relations)) ? ['relationships' => $relations] : [];
     }
 }

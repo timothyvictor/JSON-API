@@ -62,6 +62,7 @@ class JsonApiControllerTest extends TestCase
         $id = $category->id;
         
         $response = $this->json('GET', "/categories/{$id}");
+        // dd(json_decode($response->getContent()));
         $this->assertValidJsonApiStructure(json_decode($response->getContent()));
 
         $response
@@ -93,7 +94,7 @@ class JsonApiControllerTest extends TestCase
         });
         
         $response = $this->json('GET', '/categories');
-        // dd(json_decode($response->getContent()));
+        
         $this->assertValidJsonApiStructure(json_decode($response->getContent()));
 
         $response
@@ -108,7 +109,15 @@ class JsonApiControllerTest extends TestCase
                             'articles' => [
                                 'data' => [
                                     ['type', 'id']
-                                ]
+                                ],
+                                'links'
+                            ],
+                            'author' => [
+                                'data' => [
+                                    'type',
+                                    'id'
+                                ],
+                                'links'
                             ]
                         ]
                     ]

@@ -95,7 +95,27 @@ class SerializerTest extends TestCase
         $this->assertTrue(array_key_exists('relationships', $relationships));
         $this->assertTrue(array_key_exists('articles', $relationships['relationships']));
         $this->assertTrue(is_array($relationships['relationships']));
+        // dump($relationships);
         $this->assertTrue(gettype($relationships['relationships']['author']['data']) === "NULL");
         
+    }
+
+    public function test_serialize_relationship_incudes_a_links_object_for_each_relationship()
+    {
+        $category = factory(Category::class)->create();
+        $articles = $category->articles()->saveMany(factory(Article::class, 3)->make());
+        $author = $category->author()->associate(factory(Author::class)->create());
+        $author->save();
+        $serializer = $this->app->make(Serializer::class);
+        $relationships = $serializer->serializeRelationships($category);
+        $articleObject = $relationships['relationships']['articles'];
+        $authorObject = $relationships['relationships']['author'];
+        // dump($relationships);
+        $this->assertTrue(array_key_exists('links', $articleObject));
+        $this->assertTrue(array_key_exists('self', $articleObject['links']));
+        $this->assertTrue(array_key_exists('links', $authorObject));
+        $this->assertTrue(array_key_exists('self', $authorObject['links']));
+
+
     }
 }
