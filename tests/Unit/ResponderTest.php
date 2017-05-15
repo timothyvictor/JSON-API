@@ -44,4 +44,13 @@ class ResponderTest extends TestCase
         $this->assertTrue($this->containsMustHaveMembers($content));
     }
 
+    public function test_include_to_array_generates_correct_array_shape()
+    {
+        $string = "one,two.three,four.five.six";
+        $responder = $this->app->make(Responder::class);
+        $array = $responder->include_to_array($string);
+        $expected = ['one','two.three','four.five.six'];
+        $this->assertEquals($expected, $array);
+    }
+
 }

@@ -6,6 +6,7 @@ use TimothyVictor\JsonAPI\Serializer;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Article;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Author;
+use TimothyVictor\JsonAPI\Test\Resources\Models\Comment;
 
 class SerializerTest extends TestCase
 {
@@ -71,16 +72,15 @@ class SerializerTest extends TestCase
 
     public function test_serialiaze_relationship_returns_a_resource_identifier_object_for_a_present_to_one_relation()
     {
-        $category = factory(Category::class)->create();
-        $author = $category->author()->associate(factory(Author::class)->create());
-        $author->save();
+        $article = factory(Article::class)->create();
+        $category = $article->category()->associate(factory(Category::class)->create());
         $serializer = $this->app->make(Serializer::class);
-        $relationships = $serializer->serializeRelationships($category);
+        $relationships = $serializer->serializeRelationships($article);
         $this->assertTrue(is_array($relationships));
         $this->assertTrue(array_key_exists('relationships', $relationships));
         $this->assertTrue(is_array($relationships['relationships']));
-        $this->assertTrue(array_key_exists('author', $relationships['relationships']));
-        $authorResourceIdentifier = $relationships['relationships']['author']['data'];
+        $this->assertTrue(array_key_exists('category', $relationships['relationships']));
+        $authorResourceIdentifier = $relationships['relationships']['category']['data'];
         $this->assertTrue(is_array($authorResourceIdentifier));
         $this->assertTrue(array_key_exists('type', $authorResourceIdentifier));
         $this->assertTrue(array_key_exists('id', $authorResourceIdentifier));
@@ -88,34 +88,57 @@ class SerializerTest extends TestCase
     
     public function test_serialiaze_relationship_returns_null_for_an_empty_to_one_relation()
     {
-        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create();
         $serializer = $this->app->make(Serializer::class);
-        $relationships = $serializer->serializeRelationships($category);
+        $relationships = $serializer->serializeRelationships($article);
         $this->assertTrue(is_array($relationships));
         $this->assertTrue(array_key_exists('relationships', $relationships));
-        $this->assertTrue(array_key_exists('articles', $relationships['relationships']));
+        $this->assertTrue(array_key_exists('category', $relationships['relationships']));
         $this->assertTrue(is_array($relationships['relationships']));
         // dump($relationships);
-        $this->assertTrue(gettype($relationships['relationships']['author']['data']) === "NULL");
+        $this->assertTrue(gettype($relationships['relationships']['category']['data']) === "NULL");
         
     }
 
     public function test_serialize_relationship_incudes_a_links_object_for_each_relationship()
     {
-        $category = factory(Category::class)->create();
-        $articles = $category->articles()->saveMany(factory(Article::class, 3)->make());
-        $author = $category->author()->associate(factory(Author::class)->create());
-        $author->save();
+        $article = factory(Article::class)->create();
+        $category = $article->category()->associate(factory(Category::class)->create());
+        // $category = factory(Category::class)->create();
+        $comments = $article->comments()->saveMany(factory(Comment::class, 3)->create());
+        // $author = $category->author()->associate(factory(Author::class)->create());
+        // $author->save();
         $serializer = $this->app->make(Serializer::class);
-        $relationships = $serializer->serializeRelationships($category);
-        $articleObject = $relationships['relationships']['articles'];
-        $authorObject = $relationships['relationships']['author'];
+        $relationships = $serializer->serializeRelationships($article);
+        $categoryObject = $relationships['relationships']['category'];
+        $commentsObject = $relationships['relationships']['comments'];
         // dump($relationships);
-        $this->assertTrue(array_key_exists('links', $articleObject));
-        $this->assertTrue(array_key_exists('self', $articleObject['links']));
-        $this->assertTrue(array_key_exists('links', $authorObject));
-        $this->assertTrue(array_key_exists('self', $authorObject['links']));
+        $this->assertTrue(array_key_exists('links', $categoryObject));
+        $this->assertTrue(array_key_exists('self', $categoryObject['links']));
+        $this->assertTrue(array_key_exists('links', $commentsObject));
+        $this->assertTrue(array_key_exists('self', $commentsObject['links']));
 
 
+    }
+
+    public function test_get_includes_returns_an_array_of_included_resources(){
+        $article = factory(Article::class)->create();
+        $comments = $article->comments()->saveMany(factory(Comment::class, 3)->create());
+        $authors = factory(Author::class, 2)->create();
+        $comments->each(function($comment, $key) use ($authors){
+            $comment->author()->associate($authors->random());
+            $comment->save();
+        });
+        $categories = $article->category()->associate(factory(Category::class)->create())->save();
+
+        $includes = ['category','comments.author'];
+        // $author = $category->author()->associate(factory(Author::class)->create());
+        // $author->save();
+        $serializer = $this->app->make(Serializer::class);
+        $actual = $serializer->getIncludes($article, $includes);
+        // dump($actual);
+        $this->assertTrue(is_array($actual));
+        $this->assertTrue(array_key_exists('included', $actual), 'array contains a comment key');
+        // $this->assertTrue(array_key_exists('author', $actual), 'array contains an author key');
     }
 }

@@ -6,24 +6,24 @@ use TimothyVictor\JsonAPI\Model;
 
 class Category extends Model
 {
-    protected $relationMap = ['articles' => 'getArticles', 'author' => 'getAuthor'];
+    protected $relationMap = ['articles' => 'getArticles'];
 
     public function articles()
     {
         return $this->hasMany(Article::class);
     }
-    public function author()
-    {
-        return $this->belongsTo(Author::class);
-    }
+    // public function author()
+    // {
+    //     return $this->belongsTo(Author::class);
+    // }
     public function getArticles()
     {
         // return $this->articles()->getResults();
         return $this->articles;
     }
-    public function getAuthor()
-    {
-        // return $this->articles()->getResults();
-        return $this->author;
-    }
+    // public function getAuthor()
+    // {
+    //     // return $this->articles()->getResults();
+    //     return $this->author;
+    // }
 }

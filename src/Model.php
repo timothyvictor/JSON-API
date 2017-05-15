@@ -20,8 +20,10 @@ class Model extends EloquentModel implements Transformer
 
   public function transformAttributes() : array
   {
-    $attributes = collect($this->getAttributes());
+    // not sure about any of this here:
+    $attributes = collect($this->toArray());
     return $attributes->filter(function ($value, $key) {
+      // also should this be routeKey?
         return $key != $this->getKeyName();
       })->toArray();
   }

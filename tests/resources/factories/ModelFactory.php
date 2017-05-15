@@ -3,6 +3,7 @@
 use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Article;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Author;
+use TimothyVictor\JsonAPI\Test\Resources\Models\Comment;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,12 @@ $factory->define(Author::class, function (Faker\Generator $faker) {
     return [
         'first_name' => $faker->firstName,
         'surname' => $faker->lastName
+    ];
+});
+
+$factory->define(Comment::class, function (Faker\Generator $faker){
+    return [
+        'body' => $faker->sentence(3),
     ];
 });
 

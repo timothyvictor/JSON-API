@@ -5,7 +5,7 @@ namespace TimothyVictor\JsonAPI;
 use Illuminate\Support\Collection;
 // use Illuminate\Http\Response;
 // use Illuminate\Http\JsonResponse;
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request;
 
 class Responder
 {
@@ -23,8 +23,28 @@ class Responder
         return $this->response->respondOk($this->serialize->serializeCollection($collection));
     }
 
-    public function respondWithResource(Transformer $item)
+    public function include_to_array($include_string)
     {
-        return $this->response->respondOk($this->serialize->serializeResource($item));
+        // $includes = Helper::comma_to_array($include_string);
+        // $array = [];
+        // foreach ($includes as $include){
+        //     $array[] = Helper::dot_to_array($include);
+        // }
+        // return $array;
+        return Helper::comma_to_array($include_string);
+    }
+
+    public function respondWithResource(Transformer $item, $request = null)
+    {
+        $includes = [];
+        if (isset($request)){
+            $include = $request->input('include');
+        }
+        if(isset($include)){
+            $includes = $this->include_to_array($include);
+            // dd($includes);
+        }
+        // dd($includes);
+        return $this->response->respondOk($this->serialize->serializeResource($item, $includes));
     }
 }
