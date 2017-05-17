@@ -6,49 +6,25 @@ use Illuminate\Support\Collection;
 
 class Serializer
 {
+    private $serialize;
 
-    private $apiMember = ['jsonapi' => [ "version" => "1.0" ]];
-
-
-    public function serializeResourceObject($item) : array
+    public function __construct(Serialize $serialize)
     {
-        return array_merge($this->serializeId($item), $this->serializeType($item), $this->serializeAttributes($item), $this->serializeRelationships($item));
-    }
+        $this->serialize = $serialize;
 
-    private function serializeType($item) : array
-    {
-        return ['type' => $item->transformType()];
-    }
-
-    private function serializeId($item) : array
-    {
-        return ['id' => (string) $item->transformId()];
-    }
-
-    private function serializeAttributes($item) : array
-    {
-        return ['attributes' => $item->transformAttributes()];
-    }
-
-    public function serializeResourceLink($item) : array
-    {
-        return [
-            'links' => [
-                'self' => $item->transformSelfLink()
-            ]
-        ];
-    }
+    } 
 
     private function serializeManyRelationship(Collection $relations, $include = false) : array
     {
         return ['data' => $relations->map(function(Transformer $item, $key){
-            return (array_merge($this->serializeType($item), $this->serializeId($item)));
+            return (array_merge($this->serialize->serializeType($item), $this->serialize->serializeId($item)));
         })->all()];
+        // return ['data' => $relations_array];
     }
 
     private function serializeSingleRelationship($relation, $include = false) : array
     {
-        return ['data' => ($relation instanceof Transformer) ? (array_merge($this->serializeType($relation), $this->serializeId($relation))) : NULL];
+        return ['data' => ($relation instanceof Transformer) ? (array_merge($this->serialize->serializeType($relation), $this->serialize->serializeId($relation))) : NULL];
     }
 
     private function serializeCorrectRelationshipType($relation, $include = false)
@@ -57,7 +33,7 @@ class Serializer
          
     }
 
-    public function serializeRelationships(Transformer $item) : array
+    public function getRelationships(Transformer $item) : array
     {
         $relationMap = collect($item->getRelationMap());
         $relations = [];
@@ -70,10 +46,5 @@ class Serializer
             });
         }
         return (count($relations)) ? ['relationships' => $relations] : [];
-    }
-
-    public function getApiMember()
-    {
-        return $this->apiMember;
     }
 }

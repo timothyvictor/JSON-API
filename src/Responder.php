@@ -10,17 +10,17 @@ use Illuminate\Http\Request;
 class Responder
 {
     private $response;
-    private $serialize;
+    private $assemble;
 
-    public function __construct(Response $response, Serializer $serialize)
+    public function __construct(Response $response, Assembler $assembler)
     {
         $this->response = $response;
-        $this->serialize = $serialize;
+        $this->assemble = $assembler;
     }
 
     public function respondWithCollection(Collection $collection)
     {
-        return $this->response->respondOk($this->serialize->serializeCollection($collection));
+        return $this->response->respondOk($this->assemble->assembleCollection($collection));
     }
 
     public function include_to_array($include_string)
@@ -45,6 +45,6 @@ class Responder
             // dd($includes);
         }
         // dd($includes);
-        return $this->response->respondOk($this->serialize->serializeResource($item, $includes));
+        return $this->response->respondOk($this->assemble->assembleResource($item, $includes));
     }
 }

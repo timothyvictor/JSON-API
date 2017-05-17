@@ -10,7 +10,7 @@ interface Transformer
 
     public function transformType() : string;
 
-    public function transfromSelfLink() : string;
+    public function transformSelfLink() : string;
 
     public function getRelationMap();
 }

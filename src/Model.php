@@ -28,7 +28,7 @@ class Model extends EloquentModel implements Transformer
       })->toArray();
   }
 
-  public function transfromSelfLink() : string
+  public function transformSelfLink() : string
   { 
     return route("{$this->transformType()}.index");
   }
