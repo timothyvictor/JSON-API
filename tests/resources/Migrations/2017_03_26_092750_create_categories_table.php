@@ -15,6 +15,7 @@ class CreateCategoriesTable extends Migration
             $table->integer('author_id')->unsigned()->nullable();
             $table->foreign('author_id')->references('id')->on('authors')->onDelete('cascade');
             $table->string('title');
+            $table->string('description')->nullable();
             $table->timestamps();
         });
         // $now = Carbon::now();

@@ -26,6 +26,8 @@ class JsonApiControllerTest extends TestCase
         
         $response = $this->json('GET', '/categories');
 
+        // exit(dump(json_decode($response->getContent())));
+
         $this->assertValidJsonApiStructure(json_decode($response->getContent()));
 
         $response
@@ -124,7 +126,7 @@ class JsonApiControllerTest extends TestCase
             ]);
     }
 
-    public function test_a_get_request_to_resource_with_a_relationship_and_the_include_parameter_inludes_the_relationship()
+    public function test_a_get_request_to_resource_with_a_relationship_and_the_include_parameter_includes_the_relationship()
     {
         $this->disableExceptionHandling();
 
@@ -159,8 +161,81 @@ class JsonApiControllerTest extends TestCase
     }
 
 
-    // public function test_response_from_json_endpoint_return_an_error_if_request_headers_do_have_correct_media_type()
-    // {
+    public function test_requesting_fields_in_the_query_string_returns_only_stated_fields()
+    {
+        // $this->disableExceptionHandling();
+        $category = factory(Category::class)->create();
+    
+        $response = $this->json('GET', "/categories/{$category->id}?fields[categories]=description");
+
+        $content = json_decode($response->getContent());
+        $this->assertValidJsonApiStructure($content);
+        $response
+            ->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/vnd.api+json')
+            ->assertJsonFragment([
+                'attributes' => [
+                    'description' => $category->description
+                ]
+            ]);
+    }
+
+    public function test_adding_a_valid_sort_parameter_to_the_query_string_sorts_a_collection_of_primary_data()
+    {
+        // $this->disableExceptionHandling();
+        $titles = collect(['toes', 'arm pits', 'noses']);
+        $categories = $titles->map(function($title){
+            return factory(Category::class)->create(['title' => $title]);
+        });
+        $response = $this->json('GET', "/categories?sort=title");
+        $response
+            ->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/vnd.api+json');
+        $content = json_decode($response->getContent());
+        $actualTitles = collect($content->data)->map(function($category){
+            return $category->attributes->title;
+        });
+        // dump($titles->sort()->flatten()->all(), $actualTitles->flatten()->all());
+        $this->assertEquals($titles->sort()->flatten()->all(), $actualTitles->flatten()->all(), "the returned collection is sorted alphabetically by title");
+
+    }
+
+    public function test_a_response_from_a_paginated_controller_method_includes_the_paginated_links()
+    {
+        $this->disableExceptionHandling();
+        $articles = factory(Article::class, 50)->create();
+        $response = $this->json('GET', "/articles");
+        $content = json_decode($response->getContent());
+        $response
+            ->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/vnd.api+json');
+        $this->assertValidJsonApiStructure($content);
+        $response->assertJsonStructure([
+            'links' => [
+                'self',
+                'pagination' => [
+                    'first', 
+                    'last', 
+                    'prev', 
+                    'next'
+                ]
+            ]  
+        ]);
+        $collection_route = route('articles.index');
+        $this->assertEquals($collection_route, $content->links->self);
+        $this->assertEquals($content->links->pagination->next, $collection_route . "?page=2");
+        $this->assertEquals($content->links->pagination->prev, NULL);
         
-    // }
+        $response2 = $this->json('GET', $content->links->pagination->next);
+        $response2
+            ->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/vnd.api+json');
+        $this->assertValidJsonApiStructure($content);
+        $content2 = json_decode($response2->getContent());
+        $this->assertEquals($content2->links->self, $collection_route . "?page=2");
+        $this->assertEquals($content2->links->pagination->next, $collection_route . "?page=3");
+        $this->assertEquals($content2->links->pagination->prev, $collection_route . "?page=1");
+
+
+    }
 }

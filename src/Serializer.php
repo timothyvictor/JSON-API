@@ -10,9 +10,9 @@ class Serializer
     private $apiMember = ['jsonapi' => [ "version" => "1.0" ]];
 
 
-    public function serializeResourceObject($item) : array
+    public function serializeResourceObject($item, $parameters) : array
     {
-        return array_merge($this->serializeId($item), $this->serializeType($item), $this->serializeAttributes($item), $this->serializeRelationships($item));
+        return array_merge($this->serializeId($item), $this->serializeType($item), $this->serializeAttributes($item, $parameters), $this->serializeRelationships($item));
     }
 
     private function serializeType($item) : array
@@ -25,10 +25,21 @@ class Serializer
         return ['id' => (string) $item->transformId()];
     }
 
-    private function serializeAttributes($item) : array
-    {
-        return ['attributes' => $item->transformAttributes()];
+    private function filterAttributes($attributes, $fields){
+        $fieldsArray = explode(',', $fields);
+        return array_intersect_key($attributes, array_flip($fieldsArray));
     }
+
+    private function serializeAttributes($item, $parameters) : array
+    {
+        $fields = $parameters['fields'];
+        $attributes = $item->transformAttributes();
+        if (!empty($fields) && array_key_exists($item->transformType(), $fields)){
+            $attributes = $this->filterAttributes($attributes, $fields[$item->transformType()]);
+        }
+        return ['attributes' => $attributes];
+    }
+
 
     public function serializeResourceLink($item) : array
     {
@@ -37,6 +48,20 @@ class Serializer
                 'self' => $item->transformSelfLink()
             ]
         ];
+    }
+
+    public function topLevelLinksObject($items, $parameters)
+    {
+        $links = [
+             'links' => [
+                'self' => url()->full(),
+            ]
+        ];
+        if(!empty($parameters['pagination'])){
+            $links['links']['pagination'] = $parameters['pagination'];
+        }
+
+        return $links;
     }
 
     private function serializeManyRelationship(Collection $relations, $include = false) : array

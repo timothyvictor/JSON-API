@@ -44,13 +44,17 @@ class ResponderTest extends TestCase
         $this->assertTrue($this->containsMustHaveMembers($content));
     }
 
-    public function test_include_to_array_generates_correct_array_shape()
+    public function test_passing_the_wrong_class_generates_a_type_error()
     {
-        $string = "one,two.three,four.five.six";
+        $error;
         $responder = $this->app->make(Responder::class);
-        $array = $responder->include_to_array($string);
-        $expected = ['one','two.three','four.five.six'];
-        $this->assertEquals($expected, $array);
-    }
+        try {
+            $response = $responder->respondWithCollection(new \stdClass);
+        } catch(\TypeError $error) {
+            return;
+        }
+        // dump($error);
+        $this->assertTrue($error instanceof \TypeError);
 
+    }
 }

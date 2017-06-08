@@ -13,4 +13,6 @@ interface Transformer
     public function transformSelfLink() : string;
 
     public function getRelationMap();
+
+    public function transformCollectionLink();
 }

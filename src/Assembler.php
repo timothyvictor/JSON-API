@@ -15,18 +15,27 @@ class Assembler
         $this->include = $include;
     }
 
-    public function assembleCollection(Collection $collection) : array
+    private function sort($sortArray, $collection)
     {
-        return array_merge($this->serialize->getApiMember(), [
-            'data' => $collection->map(function (Transformer $item) {
-                return $this->serialize->serializeResourceObject($item);
-            }),
-        ], $this->serialize->serializeResourceLink($collection->first()));
+        if (count($sortArray) > 1) {
+        } else {
+            return $collection->sortBy("attributes.{$sortArray[0]}");
+        }
     }
 
-    public function assembleResource(Transformer $item, $includes = []) : array
+    public function assembleCollection(Collection $collection, array $parameters) : array
     {
-        return array_merge($this->serialize->getApiMember(), ['data' => $this->serialize->serializeResourceObject($item)], $this->serialize->serializeResourceLink($item), $this->include->getIncludes($item, $includes));
+        $data = $collection->map(function (Transformer $item) use ($parameters) {
+                return $this->serialize->serializeResourceObject($item, $parameters);
+        });
+        if (!empty($parameters['sort'])) {
+            $data = $this->sort($parameters['sort'], $data);
+        }
+        return array_merge($this->serialize->getApiMember(), $this->serialize->topLevelLinksObject($collection, $parameters), ['data' => $data]);
     }
 
+    public function assembleResource(Transformer $item, array $parameters) : array
+    {
+        return array_merge($this->serialize->getApiMember(), ['data' => $this->serialize->serializeResourceObject($item, $parameters)], $this->serialize->serializeResourceLink($item), $this->include->getIncludes($item, $parameters));
+    }
 }

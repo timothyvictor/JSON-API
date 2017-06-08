@@ -4,9 +4,6 @@ namespace TimothyVictor\JsonAPI\Test;
 
 use TimothyVictor\JsonAPI\Assembler;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
-use TimothyVictor\JsonAPI\Test\Resources\Models\Article;
-use TimothyVictor\JsonAPI\Test\Resources\Models\Author;
-use TimothyVictor\JsonAPI\Test\Resources\Models\Comment;
 
 class AssemblerTest extends TestCase
 {
@@ -15,7 +12,7 @@ class AssemblerTest extends TestCase
         $collection = factory(Category::class, 5)->create();
         $assembler = $this->app->make(Assembler::class);
 
-        $assembled = $assembler->assembleCollection($collection);
+        $assembled = $assembler->assembleCollection($collection, ['includes' => [], 'fields' => [], 'sort' => [], 'pagination' => []]);
 
         $this->assertTrue($this->arrays_have_same_values($this->topLevelMembers, array_keys($assembled)));
         $this->assertTrue(is_array($assembled['data'][0]));
@@ -31,7 +28,7 @@ class AssemblerTest extends TestCase
         $item = factory(Category::class)->create();
         $assembler = $this->app->make(Assembler::class);
 
-        $assembled = $assembler->assembleResource($item);
+        $assembled = $assembler->assembleResource($item, ['includes' => [], 'fields' => [], 'sort' => [], 'pagination' => []]);
 
         $this->assertTrue($this->arrays_have_same_values($this->topLevelMembers, array_keys($assembled)));
 

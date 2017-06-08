@@ -22,6 +22,7 @@ $factory->define(Category::class, function (Faker\Generator $faker) {
 
     return [
         'title' => $faker->sentence(3),
+        'description' => $faker->paragraph()
     ];
 });
 

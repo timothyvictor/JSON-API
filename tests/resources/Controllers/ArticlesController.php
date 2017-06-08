@@ -12,7 +12,7 @@ class ArticlesController extends JsonApiController
 {
     public function index()
     {
-        return $this->jsonResponder->respondWithCollection(Article::all());
+        return $this->jsonResponder->respondWithCollection(Article::paginate(10));
     }
 
     public function show(Request $request, $id)

@@ -24,12 +24,17 @@ class Model extends EloquentModel implements Transformer
     $attributes = collect($this->toArray());
     return $attributes->filter(function ($value, $key) {
       // also should this be routeKey?
-        return $key != $this->getKeyName();
+        return $key != $this->getKeyName() && substr($key, -3) != "_id";
       })->toArray();
   }
 
   public function transformSelfLink() : string
   { 
+    return route("{$this->transformType()}.index");
+  }
+
+  public function transformCollectionLink()
+  {
     return route("{$this->transformType()}.index");
   }
 

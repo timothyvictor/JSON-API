@@ -19,14 +19,27 @@ class IncluderTest extends TestCase
             $comment->save();
         });
         $categories = $article->category()->associate(factory(Category::class)->create())->save();
-
-        $includes = ['category','comments.author'];
+        $parameters = ['includes' => [], 'fields' => []];
+        $parameters['includes'] = ['category','comments.author'];
 
         $includer = $this->app->make(Includer::class);
-        $actual = $includer->getIncludes($article, $includes);
+        $actual = $includer->getIncludes($article, $parameters);
 
-        $this->assertTrue(is_array($actual));
-        $this->assertTrue(array_key_exists('included', $actual), 'array contains a comment key');
+        $this->assertTrue(array_key_exists('included', $actual), 'array contains an included key');
+
+        $included = collect($actual['included']);
+
+        $expectedTypes = ['authors', 'categories', 'comments'];
+        $actualTypes = $included->unique('type')->sortBy('type')->pluck('type')->all();
+        $this->assertEquals($expectedTypes, $actualTypes, 'the included array only contains resources of the type requested');
+
+        $actualCountOfItems = $included->count();
+        $uniqueCountOfItems = $included->unique(function ($item){
+            return $item['type'].$item['id'];
+        })->count();
+        $this->assertEquals($actualCountOfItems, $uniqueCountOfItems, 'the included array does not contain any duplicates');
+        // could also assert that the ids are correct..?
+        
         // $this->assertTrue(array_key_exists('author', $actual), 'array contains an author key');
     }
 }

@@ -93,4 +93,24 @@ class SerializerTest extends TestCase
 
 
     }
+
+    public function test_top_level_links_object_returns_paginator_members_for_a_paginated_collection(){
+        factory(Category::class, 10)->create();
+        $paginator = Category::paginate(2);
+        $parameters = [];
+        $parameters['pagination'] = [
+            'first' => $paginator->url(1),
+            'last' => $paginator->url($paginator->lastPage()),
+            'prev' => $paginator->previousPageUrl(),
+            'next' => $paginator->nextPageUrl(),
+        ];
+        $serialize = $this->app->make(Serializer::class);
+        $linksObject = $serialize->topLevelLinksObject($paginator->getCollection(), $parameters);
+        // exit(dump($linksObject));
+        $this->assertTrue(array_key_exists('links', $linksObject));
+        $this->assertTrue(array_key_exists('self', $linksObject['links']));
+        $this->assertTrue(array_key_exists('pagination', $linksObject['links']));
+        $expectedKeys = ['first', 'last', 'prev', 'next'];
+        $this->assertTrue(empty(array_diff($expectedKeys, array_keys($linksObject['links']['pagination']))));
+    }
 }
