@@ -24,7 +24,7 @@ class JsonApiControllerTest extends TestCase
 
         $categories = factory(Category::class, 5)->create();
         
-        $response = $this->json('GET', '/categories');
+        $response = $this->json('GET', '/categories', [], $this->getHeaders());
 
         // exit(dump(json_decode($response->getContent())));
 
@@ -64,7 +64,7 @@ class JsonApiControllerTest extends TestCase
         $category = factory(Category::class)->create();
         $id = $category->id;
         
-        $response = $this->json('GET', "/categories/{$id}");
+        $response = $this->json('GET', "/categories/{$id}", [], $this->getHeaders());
         // dd(json_decode($response->getContent()));
         $this->assertValidJsonApiStructure(json_decode($response->getContent()));
 
@@ -93,7 +93,7 @@ class JsonApiControllerTest extends TestCase
         $category = factory(Category::class)->create();
         $categories = $article->category()->associate($category)->save();
         
-        $response = $this->json('GET', "/articles/{$article->id}");
+        $response = $this->json('GET', "/articles/{$article->id}", [], $this->getHeaders());
         // dump($response->getContent());
         $this->assertValidJsonApiStructure(json_decode($response->getContent()));
 
@@ -139,7 +139,7 @@ class JsonApiControllerTest extends TestCase
         });
         $categories = $article->category()->associate(factory(Category::class)->create())->save();
         
-        $response = $this->json('GET', "articles/{$article->id}?include=category,comments.author");
+        $response = $this->json('GET', "articles/{$article->id}?include=category,comments.author", [], $this->getHeaders());
         // dump(json_decode($response->getContent()));
         
         $this->assertValidJsonApiStructure(json_decode($response->getContent()));
@@ -166,7 +166,7 @@ class JsonApiControllerTest extends TestCase
         // $this->disableExceptionHandling();
         $category = factory(Category::class)->create();
     
-        $response = $this->json('GET', "/categories/{$category->id}?fields[categories]=description");
+        $response = $this->json('GET', "/categories/{$category->id}?fields[categories]=description", [], $this->getHeaders());
 
         $content = json_decode($response->getContent());
         $this->assertValidJsonApiStructure($content);
@@ -187,7 +187,7 @@ class JsonApiControllerTest extends TestCase
         $categories = $titles->map(function($title){
             return factory(Category::class)->create(['title' => $title]);
         });
-        $response = $this->json('GET', "/categories?sort=title");
+        $response = $this->json('GET', "/categories?sort=title", [], $this->getHeaders());
         $response
             ->assertStatus(200)
             ->assertHeader('Content-Type', 'application/vnd.api+json');
@@ -204,7 +204,7 @@ class JsonApiControllerTest extends TestCase
     {
         $this->disableExceptionHandling();
         $articles = factory(Article::class, 50)->create();
-        $response = $this->json('GET', "/articles");
+        $response = $this->json('GET', "/articles", [], $this->getHeaders());
         $content = json_decode($response->getContent());
         $response
             ->assertStatus(200)
@@ -226,7 +226,7 @@ class JsonApiControllerTest extends TestCase
         $this->assertEquals($content->links->pagination->next, $collection_route . "?page=2");
         $this->assertEquals($content->links->pagination->prev, NULL);
         
-        $response2 = $this->json('GET', $content->links->pagination->next);
+        $response2 = $this->json('GET', $content->links->pagination->next, [], $this->getHeaders());
         $response2
             ->assertStatus(200)
             ->assertHeader('Content-Type', 'application/vnd.api+json');

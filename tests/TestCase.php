@@ -13,10 +13,26 @@ class TestCase extends Orchestra
 {
     protected $topLevelMembers = ['jsonapi', 'data'];
     protected $resourceMembers = ['id', 'type', 'attributes'];
+    private $contentType = 'application/vnd.api+json';
+
+
+    protected function getContentTypeHeader()
+    {
+        return ['Content-Type' => $this->contentType];
+    }
+    protected function getAcceptHeader()
+    {
+        return ['Accept' => $this->contentType];
+    }
+    protected function getHeaders()
+    {
+        return array_merge($this->getContentTypeHeader(), $this->getAcceptHeader());
+    }
 
     public function setUp()
     {
         parent::setUp();
+        $this->app->make('Illuminate\Contracts\Http\Kernel')->pushMiddleware('\TimothyVictor\JsonAPI\ValidateHeaders::class');
         // $this->initializeDirectory($this->getTempDirectory());
         // $this->setUpDatabase($this->app);
         $this->setUpRoutes($this->app);
