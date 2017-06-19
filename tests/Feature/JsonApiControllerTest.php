@@ -235,7 +235,55 @@ class JsonApiControllerTest extends TestCase
         $this->assertEquals($content2->links->self, $collection_route . "?page=2");
         $this->assertEquals($content2->links->pagination->next, $collection_route . "?page=3");
         $this->assertEquals($content2->links->pagination->prev, $collection_route . "?page=1");
+    }
 
+    public function test_posting_a_valid_resource_object_to_a_collection_url_returns_a_201()
+    {
+        $this->disableExceptionHandling();
+        $resource_object = [
+            'data' => [
+                'type' => 'categories',
+                'attributes' => [
+                    'title' => 'Music',
+                    'description' => 'White lines, blow away'
+                ]
+            ]
+        ];
+        $response = $this->postJson('/categories', $resource_object, $this->getHeaders());
+        $response
+            ->assertStatus(201)
+            ->assertHeader('Content-Type', 'application/vnd.api+json')
+            ->assertHeader('Location');
+        $this->assertValidJsonApiStructure(json_decode($response->getContent()));
+        $locationHeader = $response->headers->get('location');
+        $content = json_decode($response->getContent(), true);
+        $this->assertEquals($locationHeader, $content['links']['self']); 
+    }
 
+    // this is pretty pointless at the moment. This tests nothing that isn't tested elsewhere. Remove?
+    public function test_patching_valid_resource_updates_the_provided_fields()
+    {
+        $this->disableExceptionHandling();
+
+        $category = factory(Category::class)->create(['title' => 'music']);
+        $newTitle = 'painting';
+        $resource_object = [
+            'data' => [
+                'type' => 'categories',
+                'id' => "{$category->id}",
+                'attributes' => [
+                    'title' => "{$newTitle}",
+                ]
+            ]
+        ];
+        $response = $this->patchJson("/categories/{$category->id}", $resource_object, $this->getHeaders());
+        $this->assertValidJsonApiStructure(json_decode($response->getContent()));
+        $response
+            ->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/vnd.api+json');
+        $content = json_decode($response->getContent());
+        // dump($content['data']['attributes']);
+        $this->assertNotEquals($category->title, $content->data->attributes->title);
+        $this->assertEquals($newTitle, $content->data->attributes->title);
     }
 }

@@ -57,4 +57,26 @@ class ClientErrorTest extends TestCase
             ]);
     }
 
+    // public function test_the_server_responds_400_with_errors_for_malfored_json_request_body()
+    // {
+    //     $this->disableExceptionHandling();
+    //     $resource_object = [
+    //         'data' => [
+    //             'type' => 'categories',
+    //             'attributes' => [
+    //                 'title' => 'Music',
+    //                 'description' => 'White lines, blow away'
+    //             ],
+    //             'title' => 'Music',
+    //             'description' => 'White lines, blow away',
+    //         ]
+    //     ];
+    //     $response = $this->postJson('/categories', $resource_object, $this->getHeaders());
+    //     $response
+    //         ->assertStatus(400)
+    //         ->assertHeader('Content-Type', 'application/vnd.api+json');
+    //     $this->assertValidJsonApiStructure(json_decode($response->getContent()));
+
+    // }
+
 }

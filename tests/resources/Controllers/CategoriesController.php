@@ -21,4 +21,17 @@ class CategoriesController extends JsonApiController
     {
         return $this->jsonResponder->respondWithResource(Category::find($id), $request);
     }
+
+    public function store(Request $request)
+    {
+        $category = Category::create($request->input('data.attributes'));
+        return $this->jsonResponder->respondResourceCreated($category, $request);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $category = Category::find($id);
+        $category->update($request->input('data.attributes'));
+        return $this->jsonResponder->respondWithResource($category, $request);
+    }
 }

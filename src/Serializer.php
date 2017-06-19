@@ -41,26 +41,26 @@ class Serializer
     }
 
 
-    public function serializeResourceLink($item) : array
-    {
-        return [
-            'links' => [
-                'self' => $item->transformSelfLink()
-            ]
-        ];
-    }
+    // public function serializeResourceLink($item) : array
+    // {
+    //     return [
+    //         'links' => [
+    //             'self' => $item->transformSelfLink()
+    //         ]
+    //     ];
+    // }
 
-    public function topLevelLinksObject($items, $parameters)
+    public function topLevelLinksObject($items, array $parameters)
     {
         $links = [
              'links' => [
-                'self' => url()->full(),
+                'self' => ($items instanceof Collection) ? url()->full() : $items->transformSelfLink() . "/{$items->id}",
             ]
         ];
         if(!empty($parameters['pagination'])){
             $links['links']['pagination'] = $parameters['pagination'];
         }
-
+        // exit(dump($links));
         return $links;
     }
 

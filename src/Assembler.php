@@ -36,6 +36,11 @@ class Assembler
 
     public function assembleResource(Transformer $item, array $parameters) : array
     {
-        return array_merge($this->serialize->getApiMember(), ['data' => $this->serialize->serializeResourceObject($item, $parameters)], $this->serialize->serializeResourceLink($item), $this->include->getIncludes($item, $parameters));
+        return array_merge(
+            $this->serialize->getApiMember(),
+            ['data' => $this->serialize->serializeResourceObject($item, $parameters)],
+            $this->include->getIncludes($item, $parameters),
+            $this->serialize->topLevelLinksObject($item, $parameters)
+        );
     }
 }

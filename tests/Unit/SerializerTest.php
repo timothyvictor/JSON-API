@@ -106,11 +106,20 @@ class SerializerTest extends TestCase
         ];
         $serialize = $this->app->make(Serializer::class);
         $linksObject = $serialize->topLevelLinksObject($paginator->getCollection(), $parameters);
-        // exit(dump($linksObject));
         $this->assertTrue(array_key_exists('links', $linksObject));
         $this->assertTrue(array_key_exists('self', $linksObject['links']));
         $this->assertTrue(array_key_exists('pagination', $linksObject['links']));
         $expectedKeys = ['first', 'last', 'prev', 'next'];
         $this->assertTrue(empty(array_diff($expectedKeys, array_keys($linksObject['links']['pagination']))));
+    }
+
+    public function test_top_level_links_object_generates_correct_links()
+    {
+        // need to do this for collection too
+        // also maybe sort out transformSelfLink - need method for collection and resource
+        $category = factory(Category::class)->create();
+        $serialize = $this->app->make(Serializer::class);
+        $linksObject = $serialize->topLevelLinksObject($category, []);
+        $this->assertEquals($linksObject['links']['self'], $category->transformSelfLink() . "/{$category->id}");
     }
 }

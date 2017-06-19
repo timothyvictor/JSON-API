@@ -8,10 +8,10 @@ class ResponseTest extends TestCase
 {
     
 
-    public function test_respond_ok_responds_ok()
+    public function test_ok_responds_ok()
     {
         $responseClass = $this->app->make(Response::class);
-        $response = $responseClass->respondOk([]);
+        $response = $responseClass->ok([]);
         $this->assertEquals(200, $response->status());
 
         $headers = $response->headers->all();
@@ -19,10 +19,10 @@ class ResponseTest extends TestCase
         $this->assertTrue(in_array('application/vnd.api+json', $headers['content-type']));
     }
 
-    public function test_respond_unsupported_media_type()
+    public function test_unsupported_media_type()
     {
         $responseClass = $this->app->make(Response::class);
-        $response = $responseClass->respondUnsupportedMediaType();
+        $response = $responseClass->unsupportedMediaType();
         $this->assertEquals(415, $response->status());
         $expectedContent = [
             "jsonapi" => [
@@ -42,6 +42,20 @@ class ResponseTest extends TestCase
 
 
         // exit(dump($content));
+    }
+
+    public function test_resource_created(){
+        $responseClass = $this->app->make(Response::class);
+        $response = $responseClass->resourceCreated(['data' => []], 'https://www.the-link-to-the-resource.com/resource/1');
+        $this->assertEquals(201, $response->status(), 'response code is 201');
+
+        $headers = $response->headers->all();
+        $this->assertTrue(array_key_exists('content-type', $headers), 'content-type header is present');
+        $this->assertTrue(array_key_exists('location', $headers), 'location header is present');
+        $this->assertTrue(in_array('application/vnd.api+json', $headers['content-type']), 'content-type header has correct valye');
+        $this->assertTrue(in_array('https://www.the-link-to-the-resource.com/resource/1', $headers['location']), 'location header has correct value');
+        // exit(dump($response->getContent()));
+
     }
 
 }

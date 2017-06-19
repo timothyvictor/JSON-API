@@ -28,7 +28,7 @@ class Responder
                 $collection = $collection->getCollection();
                 // exit(dump($collection));
             }
-            return $this->response->respondOk($this->assemble->assembleCollection($collection, $parameters));
+            return $this->response->ok($this->assemble->assembleCollection($collection, $parameters));
         } else {
             $argument = gettype($collection) == "object" ? get_class($collection) : gettype($collection);
             throw new \TypeError("Argument 1 passed to " . __METHOD__ . " must be of type Illuminate\Support\Collection or Illuminate\Pagination\LengthAwarePaginator. {$argument} given");
@@ -62,6 +62,11 @@ class Responder
     public function respondWithResource(Transformer $item, $request = null)
     {
         $parameters = $this->getParameters($request);
-        return $this->response->respondOk($this->assemble->assembleResource($item, $parameters));
+        return $this->response->ok($this->assemble->assembleResource($item, $parameters));
+    }
+
+    public function respondResourceCreated(Transformer $resource, $request = null)
+    {
+        return $this->response->resourceCreated($this->assemble->assembleResource($resource, $this->getParameters($request)), $resource->transformSelfLink() . "/{$resource->id}");
     }
 }

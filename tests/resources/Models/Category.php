@@ -6,6 +6,7 @@ use TimothyVictor\JsonAPI\Model;
 
 class Category extends Model
 {
+    protected $fillable = ['title', 'description'];
     protected $relationMap = ['articles' => 'getArticles'];
 
     public function articles()

@@ -25,7 +25,7 @@ class ValidateHeaders {
     {
         // exit(dump($request->header()));
         if ($request->header('content-type') != "application/vnd.api+json") {
-            return $this->apiResponse->respondUnsupportedMediaType();
+            return $this->apiResponse->unsupportedMediaType();
         }
         if (!empty($request->header('accept'))) {
             $jsonApiAcceptHeader = 0;

@@ -32,7 +32,9 @@ class TestCase extends Orchestra
     public function setUp()
     {
         parent::setUp();
-        $this->app->make('Illuminate\Contracts\Http\Kernel')->pushMiddleware('\TimothyVictor\JsonAPI\ValidateHeaders::class');
+        $this->app->make('Illuminate\Contracts\Http\Kernel')
+            ->pushMiddleware('\TimothyVictor\JsonAPI\ValidateHeaders::class');
+            // ->pushMiddleware('\TimothyVictor\JsonAPI\ValidateBody::class');
         // $this->initializeDirectory($this->getTempDirectory());
         // $this->setUpDatabase($this->app);
         $this->setUpRoutes($this->app);
@@ -52,7 +54,7 @@ class TestCase extends Orchestra
 
     protected function setUpRoutes($app)
     {
-        require(__DIR__ . '/Resources/routes/api.php');
+        require(__DIR__ . '/resources/routes/api.php');
         
     }
 
@@ -85,6 +87,7 @@ class TestCase extends Orchestra
         $message = "";
         if(!$validator->isValid()){
             $message = "JSON does not validate. Violations:\n";
+            // dump($validator->getErrors());
             foreach ($validator->getErrors() as $error) {
                 $message .= "[{$error['property']}] {$error['message']}\n";
             }
