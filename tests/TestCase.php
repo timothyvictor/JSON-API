@@ -33,8 +33,8 @@ class TestCase extends Orchestra
     {
         parent::setUp();
         $this->app->make('Illuminate\Contracts\Http\Kernel')
-            ->pushMiddleware('\TimothyVictor\JsonAPI\ValidateHeaders::class');
-            // ->pushMiddleware('\TimothyVictor\JsonAPI\ValidateBody::class');
+            ->pushMiddleware('\TimothyVictor\JsonAPI\ValidateHeaders::class')
+            ->pushMiddleware('\TimothyVictor\JsonAPI\ValidateBody::class');
         // $this->initializeDirectory($this->getTempDirectory());
         // $this->setUpDatabase($this->app);
         $this->setUpRoutes($this->app);

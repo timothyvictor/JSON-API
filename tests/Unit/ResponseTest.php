@@ -58,4 +58,53 @@ class ResponseTest extends TestCase
 
     }
 
+    public function test_bad_request_handles_multiple_errors()
+    {
+        $errors = [
+            [
+                'description' => 'error one',
+                'pointer' => 'in the bag',
+                'status' => '400'
+            ],
+            [
+                'description' => 'error two',
+                'pointer' => 'in the pocket',
+                'status' => '400'
+            ],
+            [
+                'description' => 'error three',
+                'pointer' => 'in the road',
+                'status' => '400'
+            ]
+        ];
+        $responseClass = $this->app->make(Response::class);
+        $response = $responseClass->badRequest($errors);
+        $this->assertEquals(400, $response->status(), 'response code is 400');
+        $expectedContent = [
+            "jsonapi" => [
+                "version" => "1.0"
+            ],
+            'errors' => [
+                [
+                    'description' => 'error one',
+                    'pointer' => 'in the bag',
+                    'status' => '400'
+                ],
+                [
+                    'description' => 'error two',
+                    'pointer' => 'in the pocket',
+                    'status' => '400'
+                ],
+                [
+                    'description' => 'error three',
+                    'pointer' => 'in the road',
+                    'status' => '400'
+                ]
+
+            ]
+        ];
+        $content = $response->getOriginalContent();
+        $this->assertEquals($expectedContent, $content);
+    }
+
 }

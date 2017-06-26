@@ -42,6 +42,12 @@ class Response {
         return $this;
     }
 
+    private function setAllErrors(array $errors)
+    {
+        $this->errors = $errors;
+        return $this;
+    }
+
     private function setHeader(array $header)
     {
         $this->headers = array_merge($this->headers, $header);
@@ -70,6 +76,13 @@ class Response {
         ];
     }
 
+    private function getMultipleErrors()
+    {
+        return [
+            'errors' => $this->errors
+        ];
+    }
+
     private function respond($body) : JsonResponse
     {
         return response()->json(array_merge($this->getApiMember(),$body), $this->getStatusCode(), $this->getHeaders());
@@ -78,6 +91,12 @@ class Response {
     private function respondWithErrors()
     {
         $body = $this->getErrors();
+        return $this->respond($body);
+    }
+
+    private function respondWithMultipleErrors()
+    {
+        $body = $this->getMultipleErrors();
         return $this->respond($body);
     }
 
@@ -107,6 +126,11 @@ class Response {
                 ->setErrorDetail($message)
                 ->respondWithErrors();
     }
-
+    public function badRequest($errors)
+    {
+        return $this->setStatusCode(400)
+            ->setAllErrors($errors)
+            ->respondWithMultipleErrors();
+    }
 
 }
