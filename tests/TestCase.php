@@ -38,9 +38,9 @@ class TestCase extends Orchestra
         // $this->initializeDirectory($this->getTempDirectory());
         // $this->setUpDatabase($this->app);
         $this->setUpRoutes($this->app);
-        $this->withFactories(__DIR__.'/resources/factories');
+        $this->withFactories(__DIR__.'/Resources/Factories');
         // $this->setUpMiddleware();
-        $this->loadMigrationsFrom(realpath(__DIR__.'/Resources/migrations'));
+        $this->loadMigrationsFrom(realpath(__DIR__.'/Resources/Migrations'));
         // $this->loadMigrationsFrom([
         //     '--database' => 'testing',
         //     '--realpath' => realpath(__DIR__.'/../migrations'),
@@ -54,7 +54,7 @@ class TestCase extends Orchestra
 
     protected function setUpRoutes($app)
     {
-        require(__DIR__ . '/resources/routes/api.php');
+        require(__DIR__ . '/Resources/Routes/api.php');
         
     }
 
@@ -81,7 +81,7 @@ class TestCase extends Orchestra
     protected function assertValidJsonApiStructure($data, $definition = 'schema')
     {
 
-        $schema = file_get_contents(realpath(__DIR__.'/resources/schemas') . "/{$definition}.json");
+        $schema = file_get_contents(realpath(__DIR__.'/Resources/Schemas') . "/{$definition}.json");
         $validator = new \JsonSchema\Validator;
         $validator->validate($data, json_decode($schema));
         $message = "";
