@@ -48,7 +48,7 @@ class Responder
         return $parameters;
     }
 
-    private function getParameters($request = null)
+    private function getParameters(Request $request = null)
     {
         $parameters = ['includes' => [], 'fields' => [], 'sort' => [], 'pagination' => []];
         if (isset($request)) {

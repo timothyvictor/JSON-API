@@ -8,7 +8,7 @@ class Serializer
 {
     private $serialize;
 
-    public function __construct(Serialize $serialize)
+    public function __construct(Serializer $serialize)
     {
         $this->serialize = $serialize;
 

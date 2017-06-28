@@ -40,16 +40,6 @@ class Serializer
         return ['attributes' => $attributes];
     }
 
-
-    // public function serializeResourceLink($item) : array
-    // {
-    //     return [
-    //         'links' => [
-    //             'self' => $item->transformSelfLink()
-    //         ]
-    //     ];
-    // }
-
     public function topLevelLinksObject($items, array $parameters)
     {
         $links = [
