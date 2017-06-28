@@ -18,6 +18,8 @@ class Response {
         'status' => NULL,
     ];
 
+    private $meta = [];
+
     private function setStatusCode($integer)
     {
         $this->statusCode = $integer;
@@ -53,6 +55,14 @@ class Response {
         $this->headers = array_merge($this->headers, $header);
     }
 
+    private function setMeta(array $meta)
+    {
+        foreach($meta as $key => $value) {
+            $this->meta[$key] =  $value;
+        }
+        return $this;
+    }
+
     private function getStatusCode()
     {
         return $this->statusCode;
@@ -83,9 +93,19 @@ class Response {
         ];
     }
 
-    private function respond($body) : JsonResponse
+    private function getMeta()
     {
-        return response()->json(array_merge($this->getApiMember(),$body), $this->getStatusCode(), $this->getHeaders());
+        if (empty($this->meta)){
+            return [];
+        }
+        return [
+            'meta' => $this->meta,
+        ];
+    }
+
+    private function respond($body = []) : JsonResponse
+    {
+        return response()->json(array_merge($this->getApiMember(),$body, $this->getMeta()), $this->getStatusCode(), $this->getHeaders());
     }
 
     private function respondWithErrors()
@@ -100,9 +120,19 @@ class Response {
         return $this->respond($body);
     }
 
-    public function ok(array $data)
+    public function ok(array $data = [])
     {
         return $this->setStatusCode(200)->respond($data);
+    }
+
+    public function accepted($message = 'Your request has been accepted, but is still being processed')
+    {
+        return $this->setStatusCode(202)->setMeta(['message' => $message])->respond();
+    }
+
+    public function noContent()
+    {
+        return response(null, 204)->withHeaders($this->getHeaders());
     }
 
     public function resourceCreated(array $resource, string $resource_location)
@@ -111,10 +141,17 @@ class Response {
         return $this->setStatusCode(201)->respond($resource);
     }
 
-    public function unsupportedMediaType($message = 'Clients MUST send all JSON API data in request documents with the header "Content-Type: application/vnd.api+json" without any media type parameters.')
+    public function badRequest($errors)
     {
-        return $this->setStatusCode(415)
-                ->setErrorTitle('Unsupported Media Type')
+        return $this->setStatusCode(400)
+            ->setAllErrors($errors)
+            ->respondWithMultipleErrors();
+    }
+
+    public function notFound($message = 'The requested resource could not be found.')
+    {
+        return $this->setStatusCode(404)
+                ->setErrorTitle('Not Found')
                 ->setErrorDetail($message)
                 ->respondWithErrors();
     }
@@ -126,11 +163,13 @@ class Response {
                 ->setErrorDetail($message)
                 ->respondWithErrors();
     }
-    public function badRequest($errors)
+
+    public function unsupportedMediaType($message = 'Clients MUST send all JSON API data in request documents with the header "Content-Type: application/vnd.api+json" without any media type parameters.')
     {
-        return $this->setStatusCode(400)
-            ->setAllErrors($errors)
-            ->respondWithMultipleErrors();
+        return $this->setStatusCode(415)
+                ->setErrorTitle('Unsupported Media Type')
+                ->setErrorDetail($message)
+                ->respondWithErrors();
     }
 
 }
