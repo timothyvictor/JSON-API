@@ -4,7 +4,8 @@ namespace TimothyVictor\JsonAPI;
 
 use Illuminate\Http\JsonResponse;
 
-class Response {
+class Response
+{
 
     private $statusCode = 200;
 
@@ -13,9 +14,9 @@ class Response {
     private $apiMember = ['jsonapi' => [ "version" => "1.0" ]];
 
     private $errors = [
-        'title' => NULL,
-        'detail' => NULL,
-        'status' => NULL,
+        'title' => null,
+        'detail' => null,
+        'status' => null,
     ];
 
     private $meta = [];
@@ -57,7 +58,7 @@ class Response {
 
     private function setMeta(array $meta)
     {
-        foreach($meta as $key => $value) {
+        foreach ($meta as $key => $value) {
             $this->meta[$key] =  $value;
         }
         return $this;
@@ -95,7 +96,7 @@ class Response {
 
     private function getMeta()
     {
-        if (empty($this->meta)){
+        if (empty($this->meta)) {
             return [];
         }
         return [
@@ -105,7 +106,7 @@ class Response {
 
     private function respond($body = []) : JsonResponse
     {
-        return response()->json(array_merge($this->getApiMember(),$body, $this->getMeta()), $this->getStatusCode(), $this->getHeaders());
+        return response()->json(array_merge($this->getApiMember(), $body, $this->getMeta()), $this->getStatusCode(), $this->getHeaders());
     }
 
     private function respondWithErrors()
@@ -171,5 +172,4 @@ class Response {
                 ->setErrorDetail($message)
                 ->respondWithErrors();
     }
-
 }

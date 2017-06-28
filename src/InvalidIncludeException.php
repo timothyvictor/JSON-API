@@ -2,4 +2,7 @@
 
 namespace TimothyVictor\JsonAPI;
 
-class InvalidIncludeException extends \RuntimeException {}
+class InvalidIncludeException extends \RuntimeException
+{
+    // 
+}

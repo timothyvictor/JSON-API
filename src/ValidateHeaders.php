@@ -4,7 +4,8 @@ namespace TimothyVictor\JsonAPI;
 
 use Illuminate\Support\Collection;
 
-class ValidateHeaders {
+class ValidateHeaders
+{
 
     /**
      * Handle an incoming request.
@@ -30,15 +31,15 @@ class ValidateHeaders {
         if (!empty($request->header('accept'))) {
             $jsonApiAcceptHeader = 0;
             $hasParams = 0;
-            foreach($request->header()['accept'] as $contentType){
-                if(strpos($contentType, 'application/vnd.api+json') !== false){
+            foreach ($request->header()['accept'] as $contentType) {
+                if (strpos($contentType, 'application/vnd.api+json') !== false) {
                     $jsonApiAcceptHeader++;
-                    if(strpos($contentType, ';') !== false){
+                    if (strpos($contentType, ';') !== false) {
                         $hasParams++;
                     }
                 }
             }
-            if ($jsonApiAcceptHeader <= $hasParams){
+            if ($jsonApiAcceptHeader <= $hasParams) {
                 return $this->apiResponse->notAcceptable();
             }
         }

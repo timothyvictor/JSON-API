@@ -21,9 +21,9 @@ class Responder
 
     public function respondWithCollection($collection, $request = null, $paginate = null)
     {
-        if($collection instanceof LengthAwarePaginator || $collection instanceof Collection){
+        if ($collection instanceof LengthAwarePaginator || $collection instanceof Collection) {
             $parameters = $this->getParameters($request);
-            if($collection instanceof LengthAwarePaginator){
+            if ($collection instanceof LengthAwarePaginator) {
                 $parameters = $this->addPaginationToParameters($collection, $parameters);
                 $collection = $collection->getCollection();
                 // exit(dump($collection));
@@ -33,7 +33,6 @@ class Responder
             $argument = gettype($collection) == "object" ? get_class($collection) : gettype($collection);
             throw new \TypeError("Argument 1 passed to " . __METHOD__ . " must be of type Illuminate\Support\Collection or Illuminate\Pagination\LengthAwarePaginator. {$argument} given");
         }
-        
     }
 
     private function addPaginationToParameters(LengthAwarePaginator $paginator, $parameters)

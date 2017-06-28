@@ -4,7 +4,8 @@ namespace TimothyVictor\JsonAPI;
 
 use Illuminate\Support\Collection;
 
-class ValidateBody {
+class ValidateBody
+{
     
     protected $apiResponse;
 
@@ -25,7 +26,7 @@ class ValidateBody {
                 $body = json_decode(json_encode($body));
                 $validator->validate($body, json_decode($schema));
                 $message = [];
-                if(!$validator->isValid()){
+                if (!$validator->isValid()) {
                     return $this->respondInvalid($validator->getErrors());
                 }
             }
@@ -49,6 +50,5 @@ class ValidateBody {
         })->toArray();
         // dump($errorArray);
         return $this->apiResponse->badRequest($errorArray);
-        
     }
 }

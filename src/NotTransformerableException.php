@@ -2,4 +2,7 @@
 
 namespace TimothyVictor\JsonAPI;
 
-class NotTransformerableException extends \RuntimeException {}
+class NotTransformerableException extends \RuntimeException
+{
+    // 
+}
