@@ -22,7 +22,8 @@
     </logging>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./tests</directory>
+            <directory suffix="Test.php">./tests/Feature</directory>
+            <directory suffix="Test.php">./tests/Unit</directory>
         </whitelist>
     </filter>
     <php>
