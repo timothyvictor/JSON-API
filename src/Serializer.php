@@ -6,9 +6,7 @@ use Illuminate\Support\Collection;
 
 class Serializer
 {
-
-    private $apiMember = ['jsonapi' => [ "version" => "1.0" ]];
-
+    private $apiMember = ['jsonapi' => ['version' => '1.0']];
 
     public function serializeResourceObject($item, $parameters) : array
     {
@@ -28,6 +26,7 @@ class Serializer
     private function filterAttributes($attributes, $fields)
     {
         $fieldsArray = explode(',', $fields);
+
         return array_intersect_key($attributes, array_flip($fieldsArray));
     }
 
@@ -38,6 +37,7 @@ class Serializer
         if (!empty($fields) && array_key_exists($item->transformType(), $fields)) {
             $attributes = $this->filterAttributes($attributes, $fields[$item->transformType()]);
         }
+
         return ['attributes' => $attributes];
     }
 
@@ -45,8 +45,8 @@ class Serializer
     {
         $links = [
              'links' => [
-                'self' => ($items instanceof Collection) ? url()->full() : $items->transformSelfLink() . "/{$items->id}",
-             ]
+                'self' => ($items instanceof Collection) ? url()->full() : $items->transformSelfLink()."/{$items->id}",
+             ],
         ];
         if (!empty($parameters['pagination'])) {
             $links['links']['pagination'] = $parameters['pagination'];
@@ -58,7 +58,7 @@ class Serializer
     private function serializeManyRelationship(Collection $relations, $include = false) : array
     {
         return ['data' => $relations->map(function (Transformer $item, $key) {
-            return (array_merge($this->serializeType($item), $this->serializeId($item)));
+            return array_merge($this->serializeType($item), $this->serializeId($item));
         })->all()];
     }
 
@@ -79,11 +79,12 @@ class Serializer
         if ($relationMap->isNotEmpty()) {
             $relationMap->each(function ($method, $type) use ($item, &$relations) {
                 $relation = $item->{$method}();
-                $selfLink = $item->transformSelfLink() . '/' . $item->transformId() . '/' . $type;
+                $selfLink = $item->transformSelfLink().'/'.$item->transformId().'/'.$type;
                 $links = ['links' => ['self' => $selfLink]];
                 $relations[$type] = array_merge($this->serializeCorrectRelationshipType($relation, false), $links);
             });
         }
+
         return (count($relations)) ? ['relationships' => $relations] : [];
     }
 

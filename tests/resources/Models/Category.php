@@ -13,6 +13,7 @@ class Category extends Model
     {
         return $this->hasMany(Article::class);
     }
+
     // public function author()
     // {
     //     return $this->belongsTo(Author::class);
@@ -22,6 +23,7 @@ class Category extends Model
         // return $this->articles()->getResults();
         return $this->articles;
     }
+
     // public function getAuthor()
     // {
     //     // return $this->articles()->getResults();

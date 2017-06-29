@@ -4,7 +4,8 @@ namespace TimothyVictor\JsonAPI\Test;
 
 class ClientErrorTest extends TestCase
 {
-    public function test_a_request_with_incorrect_content_type_header_returns_an_error_response(){
+    public function test_a_request_with_incorrect_content_type_header_returns_an_error_response()
+    {
         // $this->disableExceptionHandling();
         // no headers set
         $response = $this->json('GET', '/categories');
@@ -21,9 +22,9 @@ class ClientErrorTest extends TestCase
                         'status',
                         'title',
                         'detail',
-                    ]
+                    ],
                 ],
-                'jsonapi'
+                'jsonapi',
             ]);
     }
 
@@ -34,7 +35,7 @@ class ClientErrorTest extends TestCase
             'Accept' => [
                 'application/vnd.api+json;parameters=naughty',
                 'application/vnd.api+json;parameters=double_naughty',
-            ]
+            ],
         ];
         $headers = array_merge($accept_headers, $this->getContentTypeHeader());
         $response = $this->json('GET', '/categories/1', [], $headers);
@@ -50,9 +51,9 @@ class ClientErrorTest extends TestCase
                         'status',
                         'title',
                         'detail',
-                    ]
+                    ],
                 ],
-                'jsonapi'
+                'jsonapi',
             ]);
     }
 
@@ -61,14 +62,14 @@ class ClientErrorTest extends TestCase
         $this->disableExceptionHandling();
         $resource_object = [
             'data' => [
-                'type' => 'categories',
+                'type'       => 'categories',
                 'attributes' => [
-                    'title' => 'Music',
-                    'description' => 'White lines, blow away'
+                    'title'       => 'Music',
+                    'description' => 'White lines, blow away',
                 ],
-                'title' => 'Music',
+                'title'       => 'Music',
                 'description' => 'White lines, blow away',
-            ]
+            ],
         ];
         $response = $this->postJson('/categories', $resource_object, $this->getHeaders());
         $response
@@ -77,5 +78,4 @@ class ClientErrorTest extends TestCase
         $content = json_decode($response->getContent());
         $this->assertValidJsonApiStructure($content);
     }
-
 }

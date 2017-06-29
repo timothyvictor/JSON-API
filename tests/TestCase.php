@@ -2,11 +2,9 @@
 
 namespace TimothyVictor\JsonAPI\Test;
 
-use Orchestra\Testbench\Exceptions\Handler;
+use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Exception;;
-use Illuminate\Http\Response;
-use Route;
+use Orchestra\Testbench\Exceptions\Handler;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -15,15 +13,16 @@ class TestCase extends Orchestra
     protected $resourceMembers = ['id', 'type', 'attributes'];
     private $contentType = 'application/vnd.api+json';
 
-
     protected function getContentTypeHeader()
     {
         return ['Content-Type' => $this->contentType];
     }
+
     protected function getAcceptHeader()
     {
         return ['Accept' => $this->contentType];
     }
+
     protected function getHeaders()
     {
         return array_merge($this->getContentTypeHeader(), $this->getAcceptHeader());
@@ -54,8 +53,7 @@ class TestCase extends Orchestra
 
     protected function setUpRoutes($app)
     {
-        require(__DIR__ . '/Resources/Routes/api.php');
-        
+        require __DIR__.'/Resources/Routes/api.php';
     }
 
     protected function getPackageProviders($app)
@@ -66,13 +64,19 @@ class TestCase extends Orchestra
         ];
     }
 
-
     protected function disableExceptionHandling()
     {
-        $this->app->instance(ExceptionHandler::class, new class extends Handler {
-            public function __construct() {}
-            public function report(Exception $e) {}
-            public function render($request, Exception $e) {
+        $this->app->instance(ExceptionHandler::class, new class() extends Handler {
+            public function __construct()
+            {
+            }
+
+            public function report(Exception $e)
+            {
+            }
+
+            public function render($request, Exception $e)
+            {
                 throw $e;
             }
         });
@@ -80,18 +84,18 @@ class TestCase extends Orchestra
 
     protected function assertValidJsonApiStructure($data, $definition = 'schema')
     {
-
-        $schema = file_get_contents(realpath(__DIR__.'/Resources/Schemas') . "/{$definition}.json");
-        $validator = new \JsonSchema\Validator;
+        $schema = file_get_contents(realpath(__DIR__.'/Resources/Schemas')."/{$definition}.json");
+        $validator = new \JsonSchema\Validator();
         $validator->validate($data, json_decode($schema));
-        $message = "";
-        if(!$validator->isValid()){
+        $message = '';
+        if (!$validator->isValid()) {
             $message = "JSON does not validate. Violations:\n";
             // dump($validator->getErrors());
             foreach ($validator->getErrors() as $error) {
                 $message .= "[{$error['property']}] {$error['message']}\n";
             }
         }
+
         return $this->assertTrue($validator->isValid(), $message);
     }
 }

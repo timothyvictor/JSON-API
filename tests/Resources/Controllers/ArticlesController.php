@@ -2,9 +2,10 @@
 
 namespace TimothyVictor\JsonAPI\Test\Resources\Controllers;
 
+use Illuminate\Http\Request;
 use TimothyVictor\JsonAPI\Controller as JsonApiController;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Article;
-use Illuminate\Http\Request;
+
 // use Illuminate\Http\Response;
 // use Response;
 

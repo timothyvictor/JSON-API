@@ -2,11 +2,11 @@
 
 namespace TimothyVictor\JsonAPI;
 
-use Illuminate\Support\Collection;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 // use Illuminate\Http\Response;
 // use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class Responder
 {
@@ -28,10 +28,11 @@ class Responder
                 $collection = $collection->getCollection();
                 // exit(dump($collection));
             }
+
             return $this->response->ok($this->assemble->assembleCollection($collection, $parameters));
         } else {
-            $argument = gettype($collection) == "object" ? get_class($collection) : gettype($collection);
-            throw new \TypeError("Argument 1 passed to " . __METHOD__ . " must be of type Illuminate\Support\Collection or Illuminate\Pagination\LengthAwarePaginator. {$argument} given");
+            $argument = gettype($collection) == 'object' ? get_class($collection) : gettype($collection);
+            throw new \TypeError('Argument 1 passed to '.__METHOD__." must be of type Illuminate\Support\Collection or Illuminate\Pagination\LengthAwarePaginator. {$argument} given");
         }
     }
 
@@ -40,10 +41,11 @@ class Responder
         $parameters['pagination'] = [
             // 'self' => $paginator->url($paginator->currentPage()),
             'first' => $paginator->url(1),
-            'last' => $paginator->url($paginator->lastPage()),
-            'prev' => $paginator->previousPageUrl(),
-            'next' => $paginator->nextPageUrl(),
+            'last'  => $paginator->url($paginator->lastPage()),
+            'prev'  => $paginator->previousPageUrl(),
+            'next'  => $paginator->nextPageUrl(),
         ];
+
         return $parameters;
     }
 
@@ -55,17 +57,19 @@ class Responder
             $parameters['includes'] = $request->input('include') ? Helper::comma_to_array($request->input('include')) : [];
             $parameters['sort'] = $request->input('sort') ? Helper::dot_to_array($request->input('sort')) : [];
         }
+
         return $parameters;
     }
 
     public function respondWithResource(Transformer $item, $request = null)
     {
         $parameters = $this->getParameters($request);
+
         return $this->response->ok($this->assemble->assembleResource($item, $parameters));
     }
 
     public function respondResourceCreated(Transformer $resource, $request = null)
     {
-        return $this->response->resourceCreated($this->assemble->assembleResource($resource, $this->getParameters($request)), $resource->transformSelfLink() . "/{$resource->id}");
+        return $this->response->resourceCreated($this->assemble->assembleResource($resource, $this->getParameters($request)), $resource->transformSelfLink()."/{$resource->id}");
     }
 }

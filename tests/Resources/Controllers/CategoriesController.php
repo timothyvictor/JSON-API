@@ -2,9 +2,9 @@
 
 namespace TimothyVictor\JsonAPI\Test\Resources\Controllers;
 
+use Illuminate\Http\Request;
 use TimothyVictor\JsonAPI\Controller as JsonApiController;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
-use Illuminate\Http\Request;
 
 // use Illuminate\Http\Response;
 // use Response;
@@ -25,6 +25,7 @@ class CategoriesController extends JsonApiController
     public function store(Request $request)
     {
         $category = Category::create($request->input('data.attributes'));
+
         return $this->jsonResponder->respondResourceCreated($category, $request);
     }
 
@@ -32,6 +33,7 @@ class CategoriesController extends JsonApiController
     {
         $category = Category::find($id);
         $category->update($request->input('data.attributes'));
+
         return $this->jsonResponder->respondWithResource($category, $request);
     }
 }

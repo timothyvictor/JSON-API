@@ -1,6 +1,8 @@
 <?php
+
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
+
 class CreateCategoriesTable extends Migration
 {
     /**
@@ -26,6 +28,7 @@ class CreateCategoriesTable extends Migration
         //     'updated_at' => $now,
         // ]);
     }
+
     /**
      * Reverse the migrations.
      *
