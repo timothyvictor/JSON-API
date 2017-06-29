@@ -1,6 +1,7 @@
 <?php
-use Carbon\Carbon;
+
 use Illuminate\Database\Migrations\Migration;
+
 class CreateCommentsTable extends Migration
 {
     /**
@@ -18,6 +19,7 @@ class CreateCommentsTable extends Migration
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      *

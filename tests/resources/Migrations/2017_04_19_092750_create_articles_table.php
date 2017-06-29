@@ -1,6 +1,7 @@
 <?php
-use Carbon\Carbon;
+
 use Illuminate\Database\Migrations\Migration;
+
 class CreateArticlesTable extends Migration
 {
     /**
@@ -19,6 +20,7 @@ class CreateArticlesTable extends Migration
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      *

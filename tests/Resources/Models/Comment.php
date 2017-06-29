@@ -19,5 +19,4 @@ class Comment extends Model
     {
         return $this->author;
     }
-
 }

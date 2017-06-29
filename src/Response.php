@@ -6,15 +6,14 @@ use Illuminate\Http\JsonResponse;
 
 class Response
 {
-
     private $statusCode = 200;
 
     private $headers = ['Content-Type' => 'application/vnd.api+json'];
 
-    private $apiMember = ['jsonapi' => [ "version" => "1.0" ]];
+    private $apiMember = ['jsonapi' => ['version' => '1.0']];
 
     private $errors = [
-        'title' => null,
+        'title'  => null,
         'detail' => null,
         'status' => null,
     ];
@@ -24,30 +23,35 @@ class Response
     private function setStatusCode($integer)
     {
         $this->statusCode = $integer;
+
         return $this;
     }
 
     private function setErrorStatus()
     {
         $this->errors['status'] = "{$this->getStatusCode()}";
+
         return $this;
     }
 
     private function setErrorDetail(string $detail)
     {
         $this->errors['detail'] = $detail;
+
         return $this;
     }
 
     private function setErrorTitle(string $title)
     {
         $this->errors['title'] = $title;
+
         return $this;
     }
 
     private function setAllErrors(array $errors)
     {
         $this->errors = $errors;
+
         return $this;
     }
 
@@ -59,8 +63,9 @@ class Response
     private function setMeta(array $meta)
     {
         foreach ($meta as $key => $value) {
-            $this->meta[$key] =  $value;
+            $this->meta[$key] = $value;
         }
+
         return $this;
     }
 
@@ -82,15 +87,16 @@ class Response
     private function getErrors()
     {
         $this->setErrorStatus();
+
         return [
-            'errors' => [$this->errors]
+            'errors' => [$this->errors],
         ];
     }
 
     private function getMultipleErrors()
     {
         return [
-            'errors' => $this->errors
+            'errors' => $this->errors,
         ];
     }
 
@@ -99,6 +105,7 @@ class Response
         if (empty($this->meta)) {
             return [];
         }
+
         return [
             'meta' => $this->meta,
         ];
@@ -112,12 +119,14 @@ class Response
     private function respondWithErrors()
     {
         $body = $this->getErrors();
+
         return $this->respond($body);
     }
 
     private function respondWithMultipleErrors()
     {
         $body = $this->getMultipleErrors();
+
         return $this->respond($body);
     }
 
@@ -139,6 +148,7 @@ class Response
     public function resourceCreated(array $resource, string $resource_location)
     {
         $this->setHeader(['location' => $resource_location]);
+
         return $this->setStatusCode(201)->respond($resource);
     }
 

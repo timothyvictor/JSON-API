@@ -4,7 +4,7 @@ namespace TimothyVictor\JsonAPI;
 
 use Illuminate\Support\Collection;
 
-class Serializer
+class Relations
 {
     private $serialize;
 
@@ -16,7 +16,7 @@ class Serializer
     private function serializeManyRelationship(Collection $relations, $include = false) : array
     {
         return ['data' => $relations->map(function (Transformer $item, $key) {
-            return (array_merge($this->serialize->serializeType($item), $this->serialize->serializeId($item)));
+            return array_merge($this->serialize->serializeType($item), $this->serialize->serializeId($item));
         })->all()];
         // return ['data' => $relations_array];
     }
@@ -38,11 +38,12 @@ class Serializer
         if ($relationMap->isNotEmpty()) {
             $relationMap->each(function ($method, $type) use ($item, &$relations) {
                 $relation = $item->{$method}();
-                $selfLink = $item->transformSelfLink() . '/' . $item->transformId() . '/' . $type;
+                $selfLink = $item->transformSelfLink().'/'.$item->transformId().'/'.$type;
                 $links = ['links' => ['self' => $selfLink]];
                 $relations[$type] = array_merge($this->serializeCorrectRelationshipType($relation, false), $links);
             });
         }
+
         return (count($relations)) ? ['relationships' => $relations] : [];
     }
 }

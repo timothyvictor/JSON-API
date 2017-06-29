@@ -18,12 +18,11 @@ class Includer
     private function includeItem(Transformer $item, $includes, $parameters)
     {
         if (isset($item)) {
-            $this->includes =  array_unique(array_merge($this->includes, [$this->serialize->serializeResourceObject($item, $parameters)]), SORT_REGULAR);
+            $this->includes = array_unique(array_merge($this->includes, [$this->serialize->serializeResourceObject($item, $parameters)]), SORT_REGULAR);
         }
         if (!empty($includes)) {
             return $this->includeResources($item, $includes);
         }
-        return;
     }
 
     private function includeCollection($items, $includes, $parameters)
@@ -37,6 +36,7 @@ class Includer
                 $this->includeResources($item, $includes, $parameters);
             });
         }
+
         return $this->includes = array_unique(array_merge($this->includes, $items_to_include), SORT_REGULAR);
     }
 
@@ -51,10 +51,12 @@ class Includer
         $include = array_shift($includes);
         if (array_key_exists($include, $relationMap)) {
             $relation = $item->{$relationMap[$include]}();
+
             return $this->serializeCorrectIncludeType($relation, $includes, $parameters);
         }
         throw new InvalidIncludeException("{$include} is not a valid include for {$item->transformType()}");
     }
+
     private function populateIncludes($item, $parameters)
     {
         collect($parameters['includes'])->each(function ($include, $key) use ($item, $parameters) {

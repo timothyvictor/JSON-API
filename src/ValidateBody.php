@@ -2,11 +2,8 @@
 
 namespace TimothyVictor\JsonAPI;
 
-use Illuminate\Support\Collection;
-
 class ValidateBody
 {
-    
     protected $apiResponse;
 
     public function __construct(Response $apiResponse)
@@ -20,9 +17,9 @@ class ValidateBody
         $body = $request->all();
         if (count($body)) {
             $method = $request->method();
-            if ($method == "POST" || $method == "PATCH") {
-                $schema = file_get_contents(realpath(__DIR__ . '/schemas') . "/{$method}.json");
-                $validator = new \JsonSchema\Validator;
+            if ($method == 'POST' || $method == 'PATCH') {
+                $schema = file_get_contents(realpath(__DIR__.'/schemas')."/{$method}.json");
+                $validator = new \JsonSchema\Validator();
                 $body = json_decode(json_encode($body));
                 $validator->validate($body, json_decode($schema));
                 $message = [];
@@ -43,9 +40,9 @@ class ValidateBody
             return [
                 'detail' => $error['message'],
                 'source' => [
-                    'pointer' => $error['pointer']
+                    'pointer' => $error['pointer'],
                 ],
-                'status' => '400'
+                'status' => '400',
             ];
         })->toArray();
         // dump($errorArray);

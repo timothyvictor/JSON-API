@@ -2,9 +2,9 @@
 
 namespace TimothyVictor\JsonAPI\Test\Resources\Controllers;
 
-use TimothyVictor\JsonAPI\Controller as JsonApiController;
-// use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
 use Illuminate\Http\Request;
+// use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
+use TimothyVictor\JsonAPI\Controller as JsonApiController;
 
 class CommentsController extends JsonApiController
 {

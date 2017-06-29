@@ -2,19 +2,16 @@
 
 namespace TimothyVictor\JsonAPI;
 
-use Illuminate\Support\Collection;
-
 class ValidateHeaders
 {
-
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     *
      * @return mixed
      */
-    
     protected $apiResponse;
 
     public function __construct(Response $apiResponse)
@@ -25,7 +22,7 @@ class ValidateHeaders
     public function handle($request, \Closure $next)
     {
         // exit(dump($request->header()));
-        if ($request->header('content-type') != "application/vnd.api+json") {
+        if ($request->header('content-type') != 'application/vnd.api+json') {
             return $this->apiResponse->unsupportedMediaType();
         }
         if (!empty($request->header('accept'))) {
@@ -43,6 +40,7 @@ class ValidateHeaders
                 return $this->apiResponse->notAcceptable();
             }
         }
+
         return $next($request);
     }
 }

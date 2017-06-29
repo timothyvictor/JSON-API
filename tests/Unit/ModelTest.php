@@ -27,5 +27,4 @@ class ModelTest extends TestCase
         $this->assertFalse(in_array('id', array_keys($attributesArray)));
         $this->assertFalse(in_array('type', array_keys($attributesArray)));
     }
-
 }

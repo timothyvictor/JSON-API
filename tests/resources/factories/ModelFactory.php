@@ -1,8 +1,8 @@
 <?php
 
-use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Article;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Author;
+use TimothyVictor\JsonAPI\Test\Resources\Models\Category;
 use TimothyVictor\JsonAPI\Test\Resources\Models\Comment;
 
 /*
@@ -16,13 +16,13 @@ use TimothyVictor\JsonAPI\Test\Resources\Models\Comment;
 |
 */
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+/* @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(Category::class, function (Faker\Generator $faker) {
     static $password;
 
     return [
-        'title' => $faker->sentence(3),
-        'description' => $faker->paragraph()
+        'title'       => $faker->sentence(3),
+        'description' => $faker->paragraph(),
     ];
 });
 
@@ -37,11 +37,11 @@ $factory->define(Article::class, function (Faker\Generator $faker) {
 $factory->define(Author::class, function (Faker\Generator $faker) {
     return [
         'first_name' => $faker->firstName,
-        'surname' => $faker->lastName
+        'surname'    => $faker->lastName,
     ];
 });
 
-$factory->define(Comment::class, function (Faker\Generator $faker){
+$factory->define(Comment::class, function (Faker\Generator $faker) {
     return [
         'body' => $faker->sentence(3),
     ];
@@ -54,7 +54,7 @@ $factory->define(Comment::class, function (Faker\Generator $faker){
 //         'date' => Carbon\Carbon::parse('+2 weeks'),
 //         'ticket_price' => 2000,
 //         'venue' => 'Example Venue',
-//         'venue_address' => '123 Example Lane', 
+//         'venue_address' => '123 Example Lane',
 //         'city' => 'Laraville',
 //         'state' => 'ON',
 //         'zip' => '17916',
